@@ -16,3 +16,13 @@ export async function getUser(email, password) {
 	});
 	return user;
 }
+
+export async function getUserAuth(email, authenticated) {
+	if (!authenticated) {
+		return { error: 'User is not authenticated' };
+	} else {
+		return await API.get('/users/getUserAuth', {
+			params: { email, authenticated },
+		});
+	}
+}

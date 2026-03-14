@@ -5,13 +5,15 @@ import { Dashboard } from './components/Dashboard.tsx';
 import { useState } from 'react';
 
 export function App() {
-	const [active, setActive] = useState('dashboard');
+	const [active, setActive] = useState(import.meta.env.VITE_DEFPAGE);
+	const [authenticated, setAuthenticated] = useState(import.meta.env.VITE_AUTH === 'true');
+	const [userInfo, setUserInfo] = useState(import.meta.env.VITE_EMAIL);
 
 	return (
 		<main>
 			{active === 'register' && <Register onNext={setActive} />}
-			{active === 'login' && <Login onNext={setActive} />}
-			{active === 'dashboard' && <Dashboard />}
+			{active === 'login' && <Login onNext={setActive} onVerify={setAuthenticated} userInfo={setUserInfo} />}
+			{active === 'dashboard' && <Dashboard mail={userInfo} authenticated={authenticated} onNext={setActive} />}
 		</main>
 	);
 }

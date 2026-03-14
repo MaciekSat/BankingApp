@@ -45,7 +45,7 @@ export async function retrieveUserDB(u_email) {
 	try {
 		connection = await getConnection();
 
-		const result = await connection.execute(
+		return await connection.execute(
 			`
     		BEGIN
         		get_user(:u_email, :u_name, :u_surname, :u_hash);
@@ -58,10 +58,6 @@ export async function retrieveUserDB(u_email) {
 				u_hash: { dir: oracledb.BIND_OUT, type: oracledb.STRING, maxSize: 100 },
 			},
 		);
-
-		// await connection.commit();
-
-		return result;
 	} catch (error) {
 		if (connection) {
 			await connection.rollback();

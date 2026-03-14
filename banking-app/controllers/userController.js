@@ -55,8 +55,6 @@ export async function retrieveUser(req, res) {
 		try {
 			const result = await retrieveUserDB(email);
 
-			console.log(result);
-
 			const user = {
 				name: result.outBinds.u_name,
 				surname: result.outBinds.u_surname,
@@ -93,6 +91,48 @@ export async function retrieveUser(req, res) {
 	} catch (err) {
 		return res.status(400).json({
 			error: 'Troubles with hashing password',
+		});
+	}
+}
+
+export async function retrieveUserAuth(req, res) {
+	const email = req.query.email;
+	const authenticated = req.query.authenticated;
+
+	if (!email) {
+		return res.status(400).json({
+			error: 'Missing required fields',
+		});
+	}
+
+	if (!authenticated) {
+		return res.status(400).json({
+			error: 'User not authenticated',
+		});
+	}
+
+	try {
+		const result = await retrieveUserDB(email);
+
+		const user = {
+			name: result.outBinds.u_name,
+			surname: result.outBinds.u_surname,
+			email: email,
+			hash: result.outBinds.u_hash,
+		};
+
+		return res.status(200).json({ user: user, message: 'Retrieved user' });
+	} catch (error) {
+		if (error.errorNum === 20002) {
+			return res.status(400).json({
+				error: 'User not found',
+			});
+		}
+
+		console.error(error);
+
+		res.status(500).json({
+			error: 'Internal server error',
 		});
 	}
 }

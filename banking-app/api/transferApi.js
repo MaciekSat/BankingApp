@@ -9,21 +9,3 @@ const API = axios.create({
 export async function createTransfer(data) {
 	return await API.post('/transfers', data);
 }
-
-/*
-const handleSubmit = async (e) => {
-	e.preventDefault();
-
-	try {
-		const response = await createTransfer({
-			fromId: Number(form.fromId),
-			toId: Number(form.toId),
-			amount: Number(form.amount),
-		});
-
-		setMessage(response.data.message);
-	} catch (error) {
-		setMessage(error.response?.data?.error || 'Transfer failed');
-	}
-};
-*/
