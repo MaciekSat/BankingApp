@@ -3,6 +3,7 @@ import cors from 'cors';
 import { initPool } from './db/database.js';
 import transferRoutes from './routes/transfers.js';
 import userRoutes from './routes/users.js';
+import accountRoutes from './routes/accounts.js';
 
 const app = express();
 app.use(cors());
@@ -11,6 +12,7 @@ app.use(express.json());
 // routes
 app.use('/transfers', transferRoutes);
 app.use('/users', userRoutes);
+app.use('/accounts', accountRoutes);
 
 const PORT = 3000;
 

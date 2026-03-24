@@ -56,6 +56,7 @@ export async function retrieveUser(req, res) {
 			const result = await retrieveUserDB(email);
 
 			const user = {
+				id: result.outBinds.u_id,
 				name: result.outBinds.u_name,
 				surname: result.outBinds.u_surname,
 				email: email,
@@ -115,6 +116,7 @@ export async function retrieveUserAuth(req, res) {
 		const result = await retrieveUserDB(email);
 
 		const user = {
+			id: result.outBinds.u_id,
 			name: result.outBinds.u_name,
 			surname: result.outBinds.u_surname,
 			email: email,

@@ -15,12 +15,12 @@ export function Login({ onNext, onVerify, userInfo }: LoginProps) {
 	const [message, setMessage] = useState('');
 	const [error, setError] = useState('');
 
-	const labelItem = 'block text-start text-sm font-medium text-slate-500';
-	const selectItem = 'border-2 border-gray-200 focus:border-blue-400';
+	const labelItem = 'block text-start text-sm font-medium text-slate-600';
+	const selectItem = 'border-2 border-mist-200 focus:border-mist-400';
 
 	return (
-		<section className="flex h-screen items-center justify-center bg-gray-950">
-			<div className="flex w-1/3 flex-col items-center justify-center rounded-lg border-2 border-gray-200 bg-gray-900 p-10 text-slate-50 *:w-full *:rounded-lg *:p-2 *:outline-none">
+		<section className="flex h-screen items-center justify-center bg-slate-200">
+			<div className="flex w-1/3 flex-col items-center justify-center rounded-3xl bg-slate-300 p-10 text-slate-800 shadow-2xl *:w-full *:rounded-lg *:p-2 *:outline-none">
 				<h1 className="text-center text-3xl">Login to your bank account</h1>
 				<hr style={{ borderRadius: 0, marginTop: 10, borderColor: 'lightgray' }} />
 				{/* ------------ */}
@@ -35,7 +35,7 @@ export function Login({ onNext, onVerify, userInfo }: LoginProps) {
 				<input placeholder="Enter your password" type="password" id="pass" className={selectItem} onChange={(e) => setPassword(e.target.value)} />
 				{/* ------------ */}
 				<button
-					className="mt-5 cursor-pointer rounded-lg bg-sky-700 text-slate-200"
+					className="mt-5 cursor-pointer rounded-lg bg-slate-400 text-slate-800"
 					onClick={async () => {
 						setMessage('');
 						setError('');
@@ -45,7 +45,7 @@ export function Login({ onNext, onVerify, userInfo }: LoginProps) {
 				</button>
 				{message && <p className="mt-4 text-center font-medium text-green-500">{message}</p>}
 				{error && <p className="mt-4 text-center font-medium text-red-500">{error}</p>}
-				<button className="mt-5 cursor-pointer rounded-lg bg-sky-600 text-slate-200" onClick={() => onNext('register')}>
+				<button className="mt-5 cursor-pointer rounded-lg bg-slate-200 text-slate-800" onClick={() => onNext('register')}>
 					Navigate to register page
 				</button>
 			</div>

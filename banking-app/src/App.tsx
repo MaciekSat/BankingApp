@@ -9,11 +9,13 @@ export function App() {
 	const [authenticated, setAuthenticated] = useState(import.meta.env.VITE_AUTH === 'true');
 	const [userInfo, setUserInfo] = useState(import.meta.env.VITE_EMAIL);
 
+	// console.log('auth', authenticated);
+
 	return (
 		<main>
 			{active === 'register' && <Register onNext={setActive} />}
 			{active === 'login' && <Login onNext={setActive} onVerify={setAuthenticated} userInfo={setUserInfo} />}
-			{active === 'dashboard' && <Dashboard mail={userInfo} authenticated={authenticated} onNext={setActive} />}
+			{active === 'dashboard' && <Dashboard mail={userInfo} authenticated={authenticated} logOut={setAuthenticated} onNext={setActive} />}
 		</main>
 	);
 }
