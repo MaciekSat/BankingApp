@@ -12,10 +12,9 @@ export async function createUser(data) {
 
 // used only for retrieving info from db, without auth, only used on login
 export async function getUser(email, password) {
-	const user = await API.get('/users/getUser', {
+	return await API.get('/users/getUser', {
 		params: { email, password },
 	});
-	return user;
 }
 
 // used for retrieving info about user inside modules, it prevents retrieving info from unauthorized user
