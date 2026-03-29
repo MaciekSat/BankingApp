@@ -4,6 +4,9 @@ import { initPool } from './db/database.js';
 import transferRoutes from './routes/transfers.js';
 import userRoutes from './routes/users.js';
 import accountRoutes from './routes/accounts.js';
+import oracledb from 'oracledb';
+
+const { getConnection } = oracledb;
 
 const app = express();
 app.use(cors());
@@ -21,14 +24,15 @@ async function startServer() {
 		await initPool();
 		console.log('Database pool initialized');
 
+		// Test connection immediately
+		const conn = await getConnection();
+		const result = await conn.execute('SELECT sysdate FROM dual');
+		console.log('Test query succeeded, DB time:', result.rows[0][0]);
+		await conn.close();
+
 		app.listen(PORT, () => {
 			console.log(`Server running on port ${PORT}`);
 		});
-
-		// app.post('/users', (req, res) => {
-		// 	console.log('POST /users hit', req.body);
-		// 	res.send({ ok: true });
-		// });
 	} catch (err) {
 		console.error('Failed to start server:', err);
 		process.exit(1);

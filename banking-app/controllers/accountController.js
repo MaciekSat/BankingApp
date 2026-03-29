@@ -15,7 +15,7 @@ export async function constructAccount(req, res) {
 		await createAccount(userId);
 
 		res.status(200).json({
-			message: 'Account successfully created',
+			message: 'Account successfully created. Wait for changes',
 		});
 	} catch (error) {
 		console.error(error);

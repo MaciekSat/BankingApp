@@ -1,29 +1,40 @@
 // @ts-ignore
 import { createAccount } from '../../../api/accountsApi.js';
+import { toast } from 'react-hot-toast';
 
 type HomeProps = {
 	userData: any;
+	refreshData: any;
 };
 
-export function Home({ userData }: HomeProps) {
-	const quickActionElement = 'flex gap-2 hover:bg-mist-400 p-3 rounded-lg text-lg';
+export function Home({ userData, refreshData }: HomeProps) {
+	const quickActionElement = 'flex items-center gap-2 px-5 h-1/5 text-lg glassButtonHidden';
 	const recentItems = [
 		{ id: 0, icon: 'bi bi-shop-window', type: 'Groceries', date: '21.03.2026', expenses: true, price: '$ 80.95' },
 		{ id: 1, icon: 'bi bi-phone', type: 'Electronics', date: '12.03.2026', expenses: true, price: '$ 1,450.94' },
-		{ id: 2, icon: 'bi bi-currency-dollar', type: 'Salary', date: '10.02.2026', expenses: false, price: '$ 15,000.00' },
+		{
+			id: 2,
+			icon: 'bi bi-currency-dollar',
+			type: 'Salary',
+			date: '10.02.2026',
+			expenses: false,
+			price: '$ 15,000.00',
+		},
 	];
 
 	return (
-		<div className="grid h-full w-17/20 grid-cols-4 grid-rows-2 gap-5">
+		<div className="grid h-full w-17/20 grid-cols-4 grid-rows-2 gap-3">
 			{/* Banking card */}
-			<div className="col-span-2 flex flex-col items-start justify-between gap-5 rounded-2xl border border-slate-200 bg-linear-20 from-sky-100 to-zinc-400 p-5 shadow-2xl">
+			<div className="glass col-span-2 flex flex-col items-start justify-between gap-5 p-5">
 				<p className="text-2xl">Balance</p>
-				<p className="text-5xl">{userData.account?.balance !== undefined ? `$ ${userData.account.balance}` : 'Create account first'}</p>
+				<p className="text-5xl">
+					{userData.account?.balance !== undefined ? `$ ${userData.account.balance}` : 'Create account first'}
+				</p>
 				<div className="flex items-center gap-5">
-					<span className="flex gap-2 border-r-2 border-gray-400 pr-5 text-lg">
+					<span className="flex gap-2 border-r-2 border-slate-200 pr-5 text-lg">
 						<i className="bi bi-graph-up-arrow"></i>
 						<p>Income</p>
-						<p className="text-green-400">$ 10,800.00</p>
+						<p className="text-emerald-500">$ 10,800.00</p>
 					</span>
 					<span className="flex gap-2 text-lg">
 						<i className="bi bi-graph-down-arrow"></i>
@@ -34,12 +45,16 @@ export function Home({ userData }: HomeProps) {
 			</div>
 
 			{/* Quick actions */}
-			<div className="flex flex-col gap-5 rounded-3xl border border-slate-200 bg-slate-300 p-5 shadow-2xl">
+			<div className="glass flex flex-col justify-center gap-5 p-5">
 				<button className={quickActionElement}>
 					<i className="bi bi-fast-forward"></i>
 					<p>Transfer money</p>
 				</button>
-				<button className={quickActionElement} onClick={async () => await handleAccountCreate(userData.user.id)}>
+				<button
+					className={quickActionElement}
+					onClick={async () =>
+						await handleAccountCreate(userData.user.id, userData.account?.balance, refreshData)
+					}>
 					<i className="bi bi-collection"></i>
 					<p>Create new account</p>
 				</button>
@@ -58,40 +73,54 @@ export function Home({ userData }: HomeProps) {
 			</div>
 
 			{/* Recent */}
-			<div className="row-span-2 flex flex-col gap-2 rounded-3xl border border-slate-200 bg-slate-300 p-5 shadow-2xl">
+			<div className="glass row-span-2 flex flex-col gap-2 p-5">
 				<p className="text-xl">Recent</p>
 				{recentItems.map((item) => (
-					<div key={item.id} className="flex items-center rounded-2xl bg-slate-400 p-3 px-4 text-xl">
-						<i className={`${item.icon} w-15 text-4xl`}></i>
-						<span className="flex w-45 flex-col border-r-2 border-slate-300">
-							<p className="text-slate-100">{item.type}</p>
-							<p className="text-sm text-slate-500">{item.date}</p>
+					<div key={item.id} className="glassButtonSec text-md flex items-center p-3 px-4">
+						<i className={`${item.icon} mr-2 w-1/7 text-4xl`}></i>
+						<span className="flex w-2/7 flex-col">
+							<p className="text truncate">{item.type}</p>
+							<p className="truncate text-sm text-slate-400">{item.date}</p>
 						</span>
-						<p className={`w-40 text-end ${item.expenses ? 'text-red-500' : 'text-green-500'}`}>{item.price}</p>
+						<p className={`w-4/7 text-end ${item.expenses ? 'text-red-500' : 'text-emerald-500'}`}>
+							{item.price}
+						</p>
 					</div>
 				))}
 			</div>
 
 			{/* Analysis */}
-			<div className="col-span-3 flex flex-col gap-2 rounded-3xl border border-slate-200 bg-slate-300 p-5 shadow-2xl"></div>
+			<div className="glass col-span-3 flex flex-col gap-2 p-5"></div>
 		</div>
 	);
 }
 
-const handleAccountCreate = async (userId: number) => {
-	try {
-		const response = await createAccount({
-			userId: userId,
-		});
+const handleAccountCreate = async (userId: number, balance: any, refreshData: any) => {
+	if (balance === undefined) {
+		try {
+			const response = await createAccount({
+				userId: userId,
+			});
 
-		console.log(response);
-		if (response.status == 200) {
-			console.log(response.data.message);
-		} else {
-			console.log(response.data.message);
+			if (response.status == 200) {
+				toast.success(response.data.message || 'Account created successfully');
+				setTimeout(
+					async () =>
+						await toast.promise(refreshData(), {
+							loading: 'Loading',
+							success: 'Retrieved account data',
+							error: 'Error when retrieving account data',
+						}),
+					2000,
+				);
+			} else {
+				toast.error(response.data.message || 'Something went wrong');
+			}
+		} catch (error) {
+			const err = error as any;
+			toast.error(err.response?.data || err.message);
 		}
-	} catch (error) {
-		const err = error as any;
-		console.error(err.response?.data || err.message);
+	} else {
+		toast('You already have an account', { icon: <i className="bi bi-check-circle" /> });
 	}
 };

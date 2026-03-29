@@ -16,14 +16,14 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 	const [userData, setUserData] = useState<any>({ user: null, account: null });
 	const [view, setView] = useState<any>('home');
 
-	const menuItem = 'w-4/5 cursor-pointer rounded-lg hover:bg-mist-400 p-2 text-slate-800 flex items-center justify-start gap-2';
+	const menuItem = 'w-full p-2 glassButtonHidden flex items-center justify-start gap-2';
 
 	if (!authenticated) {
 		return (
-			<section className="flex h-screen flex-col items-center justify-center bg-slate-200">
-				<div className="flex flex-col gap-2 rounded-2xl bg-slate-300 p-10 text-slate-800 shadow-2xl">
+			<section className="bgIm1 flex h-screen flex-col items-center justify-center">
+				<div className="glassEdgeLess flex flex-col gap-2 p-10">
 					<h1 className="text-2xl">Please verify user</h1>
-					<button className="mt-5 cursor-pointer rounded-lg bg-slate-200 p-3" onClick={() => onNext('login')}>
+					<button className="glassButton mt-5" onClick={() => onNext('login')}>
 						Return to login
 					</button>
 				</div>
@@ -31,41 +31,33 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 		);
 	}
 
+	const fetchData = async () => {
+		const userData = await handleUser(mail, authenticated);
+
+		if (!userData?.user) return;
+
+		setUserData({ user: userData.user, account: null });
+
+		const accountData = await handleAccount(userData.user.id, authenticated);
+
+		setUserData({ user: userData.user, account: accountData.account });
+	};
+
 	useEffect(() => {
-		if (!authenticated) return;
-
-		const fetchData = async () => {
-			const userData = await handleUser(mail, authenticated);
-
-			if (!userData?.user) return;
-
-			setUserData({
-				user: userData.user,
-				account: null,
-			});
-
-			const accountData = await handleAccount(userData.user.id, authenticated);
-
-			setUserData({
-				user: userData.user,
-				account: accountData.account,
-			});
-		};
-
 		fetchData();
 	}, [mail, authenticated]);
 
 	return (
-		<section className="flex h-screen flex-col items-center justify-center bg-slate-200">
+		<section className="bgIm1 flex h-screen flex-col items-center justify-center">
 			<div className="flex h-screen w-screen flex-col gap-2 p-2">
-				<div className="flex items-center justify-start rounded-2xl bg-linear-170 from-slate-400 to-mist-500 p-3 text-3xl text-slate-100 shadow-2xl">
+				<div className="glassEdgeLess flex items-center justify-start p-3 text-3xl">
 					Good morning, {`${userData.user?.name} `} {`${userData.user?.surname} `}
 				</div>
 
-				<div className="flex h-11/12 gap-2 rounded-3xl bg-slate-200 p-5 text-slate-800 shadow-2xl">
-					{view == 'home' && <Home userData={userData} />}
-					<div className="flex h-full w-3/20 flex-col justify-start gap-3 rounded-3xl border border-slate-200 bg-slate-300 p-2 px-5 shadow-2xl">
-						<p className="mt-3 w-4/5 text-start text-2xl">Main</p>
+				<div className="glassEdgeLess flex h-11/12 gap-3 p-5">
+					{view == 'home' && <Home userData={userData} refreshData={fetchData} />}
+					<div className="glass flex h-full w-3/20 flex-col justify-start gap-3 p-2 px-5">
+						<p className="mt-3 text-start text-2xl">Main</p>
 						<button className={menuItem} onClick={() => setView('home')}>
 							<i className="bi bi-house"></i>
 							<p>Home</p>
@@ -82,7 +74,7 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 							<i className="bi bi-graph-up"></i>
 							<p>Investments</p>
 						</button>
-						<p className="mt-10 w-4/5 text-start text-2xl">Payments</p>
+						<p className="mt-10 text-start text-2xl">Payments</p>
 						<button className={menuItem} onClick={() => setView('history')}>
 							<i className="bi bi-clock-history"></i>
 							<p>History</p>
@@ -91,7 +83,7 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 							<i className="bi bi-pie-chart"></i>
 							<p>Analytics</p>
 						</button>
-						<p className="mt-10 w-4/5 text-start text-2xl">Account</p>
+						<p className="mt-10 text-start text-2xl">Account</p>
 						<button className={menuItem} onClick={() => setView('settings')}>
 							<i className="bi bi-gear"></i>
 							<p>Settings</p>

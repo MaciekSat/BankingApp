@@ -4,13 +4,13 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"frontend": "vite",
+		"frontend": "vite --host",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
 		"server": "node server.mjs",
 		"client": "npm run dev",
 		"prettier": "npx prettier --write .",
-		"dev": "concurrently \"npm run server\" \"npm run frontend\" \"npm run prettier"
+		"dev": "concurrently -n server,frontend,prettier 'npm run server' 'npm run frontend' 'npm run prettier'"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.31.0",
@@ -38,6 +38,7 @@
 		"oracledb": "^6.10.0",
 		"react": "^19.2.4",
 		"react-dom": "^19.1.0",
-		"tailwindcss": "^4.2.1"
+		"react-hot-toast": "^2.6.0",
+		"tailwindcss": "^4.2.2"
 	}
 }

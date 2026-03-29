@@ -3,6 +3,7 @@ import { Login } from './components/Login.tsx';
 import { Dashboard } from './components/Dashboard.tsx';
 
 import { useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 export function App() {
 	const [active, setActive] = useState(import.meta.env.VITE_DEFPAGE);
@@ -13,9 +14,12 @@ export function App() {
 
 	return (
 		<main>
+			<Toaster reverseOrder={true} />
 			{active === 'register' && <Register onNext={setActive} />}
 			{active === 'login' && <Login onNext={setActive} onVerify={setAuthenticated} userInfo={setUserInfo} />}
-			{active === 'dashboard' && <Dashboard mail={userInfo} authenticated={authenticated} logOut={setAuthenticated} onNext={setActive} />}
+			{active === 'dashboard' && (
+				<Dashboard mail={userInfo} authenticated={authenticated} logOut={setAuthenticated} onNext={setActive} />
+			)}
 		</main>
 	);
 }
