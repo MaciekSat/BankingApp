@@ -1,7 +1,7 @@
 // @ts-ignore
 import { createUser, getUserAuth } from '../../api/usersApi.js';
 // @ts-ignore
-import { createAccount, getAccountAuth } from '../../api/accountsApi.js';
+import { createAccount, getAccountsAuth } from '../../api/accountsApi.js';
 import { useEffect, useState } from 'react';
 import { Home } from './dashboardComponents/Home.tsx';
 
@@ -13,7 +13,7 @@ type DashboardProps = {
 };
 
 export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProps) {
-	const [userData, setUserData] = useState<any>({ user: null, account: null });
+	const [userData, setUserData] = useState<any>({});
 	const [view, setView] = useState<any>('home');
 
 	const menuItem = 'w-full p-2 glassButtonHidden flex items-center justify-start gap-2';
@@ -36,11 +36,17 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 
 		if (!userData?.user) return;
 
-		setUserData({ user: userData.user, account: null });
+		setUserData((prev: any) => ({
+			...prev,
+			user: userData.user,
+		}));
 
-		const accountData = await handleAccount(userData.user.id, authenticated);
+		const accountsData = await handleAccounts(userData.user.id, authenticated);
 
-		setUserData({ user: userData.user, account: accountData.account });
+		setUserData((prev: any) => ({
+			...prev,
+			accounts: accountsData.accounts,
+		}));
 	};
 
 	useEffect(() => {
@@ -51,7 +57,7 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 		<section className="bgIm1 flex h-screen flex-col items-center justify-center">
 			<div className="flex h-screen w-screen flex-col gap-2 p-2">
 				<div className="glassEdgeLess flex items-center justify-start p-3 text-3xl">
-					Good morning, {`${userData.user?.name} `} {`${userData.user?.surname} `}
+					Good morning, {userData.user?.name} {userData.user?.surname}
 				</div>
 
 				<div className="glassEdgeLess flex h-11/12 gap-3 p-5">
@@ -121,9 +127,9 @@ async function handleUser(mail: string, authenticated: boolean) {
 	}
 }
 
-async function handleAccount(userId: string, authenticated: boolean) {
+async function handleAccounts(userId: string, authenticated: boolean) {
 	try {
-		const response = await getAccountAuth(userId, authenticated);
+		const response = await getAccountsAuth(userId, authenticated);
 
 		if (response.status === 200) {
 			return response.data;

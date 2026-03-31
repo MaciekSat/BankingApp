@@ -1,6 +1,6 @@
 // handles requests/responses and passes data to src/services
 
-import { createAccount, retrieveAccountDB } from '../services/accountService.js';
+import { createAccount, retrieveAccountsDB, changeAccountName } from '../services/accountService.js';
 
 export async function constructAccount(req, res) {
 	const { userId } = req.body;
@@ -26,7 +26,7 @@ export async function constructAccount(req, res) {
 	}
 }
 
-export async function retrieveAccountAuth(req, res) {
+export async function retrieveAccountsAuth(req, res) {
 	const userId = req.query.userId;
 	const authenticated = req.query.authenticated;
 
@@ -43,15 +43,31 @@ export async function retrieveAccountAuth(req, res) {
 	}
 
 	try {
-		const result = await retrieveAccountDB(userId);
+		const rows = await retrieveAccountsDB(userId);
 
-		const account = {
-			id: result.outBinds.a_id,
-			balance: result.outBinds.a_balance,
+		/*
+		only sort if there will be some problems with order
+		const accounts = rows
+			.map((row) => ({
+				id: row.ID_ACCOUNT,
+				balance: row.BALANCE,
+				accountName: row.ACC_NAME,
+				userId: userId,
+			}))
+			.sort((a, b) => a.id - b.id);
+
+		 */
+
+		const accounts = rows.map((row) => ({
+			id: row.ID_ACCOUNT,
+			balance: row.BALANCE,
+			accountName: row.ACC_NAME,
 			userId: userId,
-		};
+		}));
 
-		return res.status(200).json({ account: account, message: 'Retrieved account' });
+		console.log(rows.map((r) => r.ID_ACCOUNT));
+
+		return res.status(200).json({ accounts, message: 'Retrieved account' });
 	} catch (error) {
 		if (error.errorNum === 20002) {
 			return res.status(400).json({
@@ -59,6 +75,30 @@ export async function retrieveAccountAuth(req, res) {
 			});
 		}
 
+		console.error(error);
+
+		res.status(500).json({
+			error: 'Internal server error',
+		});
+	}
+}
+
+export async function updateAccountName(req, res) {
+	const { accountId, accountName } = req.body;
+
+	if (!accountId || !accountName) {
+		return res.status(400).json({
+			error: 'Missing required fields',
+		});
+	}
+
+	try {
+		await changeAccountName(accountId, accountName);
+
+		res.status(200).json({
+			message: 'Account name successfully changed. Wait for changes',
+		});
+	} catch (error) {
 		console.error(error);
 
 		res.status(500).json({

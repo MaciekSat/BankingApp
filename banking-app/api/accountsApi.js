@@ -11,12 +11,16 @@ export async function createAccount(data) {
 }
 
 // used for retrieving info about user inside modules, it prevents retrieving info from unauthorized user
-export async function getAccountAuth(userId, authenticated) {
+export async function getAccountsAuth(userId, authenticated) {
 	if (!authenticated) {
 		return { error: 'User is not authenticated' };
 	} else {
-		return await API.get('/accounts/getAccountAuth', {
+		return await API.get('/accounts/getAccountsAuth', {
 			params: { userId, authenticated },
 		});
 	}
+}
+
+export async function changeAccountName(data) {
+	return await API.patch('/accounts/changeAccountName', data);
 }

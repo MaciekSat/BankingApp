@@ -1,6 +1,7 @@
 // @ts-ignore
-import { createAccount } from '../../../api/accountsApi.js';
+import { createAccount, changeAccountName } from '../../../api/accountsApi.js';
 import { toast } from 'react-hot-toast';
+import { useState } from 'react';
 
 type HomeProps = {
 	userData: any;
@@ -8,6 +9,10 @@ type HomeProps = {
 };
 
 export function Home({ userData, refreshData }: HomeProps) {
+	const [nameEdit, setNameEdit] = useState<boolean>(false);
+	const [accountIndex, setAccountIndex] = useState<number>(0);
+	const [accountName, setAccountName] = useState<string>('');
+
 	const quickActionElement = 'flex items-center gap-2 px-5 h-1/5 text-lg glassButtonHidden';
 	const recentItems = [
 		{ id: 0, icon: 'bi bi-shop-window', type: 'Groceries', date: '21.03.2026', expenses: true, price: '$ 80.95' },
@@ -25,12 +30,65 @@ export function Home({ userData, refreshData }: HomeProps) {
 	return (
 		<div className="grid h-full w-17/20 grid-cols-4 grid-rows-2 gap-3">
 			{/* Banking card */}
+
 			<div className="glass col-span-2 flex flex-col items-start justify-between gap-5 p-5">
-				<p className="text-2xl">Balance</p>
-				<p className="text-5xl">
-					{userData.account?.balance !== undefined ? `$ ${userData.account.balance}` : 'Create account first'}
-				</p>
-				<div className="flex items-center gap-5">
+				<p className="h-1/5 text-2xl">Balance</p>
+				<div className="flex w-full items-center justify-between gap-10 text-xl">
+					<button
+						className="glassButtonHidden"
+						onClick={() => changeCardIndex(-1, accountIndex, setAccountIndex, userData)}>
+						<i className="bi bi-arrow-left"></i>
+					</button>
+					<div className="h-full w-full text-5xl">
+						{nameEdit ? (
+							<div className="mb-10 flex gap-2 text-xl">
+								<input
+									className="glassInput"
+									autoFocus
+									onChange={(e) => setAccountName(e.target.value)}
+									placeholder={
+										userData.accounts !== undefined
+											? userData.accounts[accountIndex].accountName
+											: ''
+									}
+								/>
+								<button
+									className="glassButton"
+									onClick={() => {
+										handleAccountNameChange(
+											userData.accounts[accountIndex].id,
+											accountName || userData.accounts[accountIndex].accountName,
+											refreshData,
+										);
+										setNameEdit(false);
+									}}>
+									Save
+								</button>
+							</div>
+						) : (
+							<p
+								className="mb-10 p-2 text-xl"
+								onClick={() => {
+									setNameEdit(true);
+								}}>
+								{userData.accounts !== undefined ? userData.accounts[accountIndex].accountName : ''}
+							</p>
+						)}
+
+						<p>
+							{userData.accounts !== undefined
+								? `$ ${formatMoney(userData.accounts[accountIndex].balance)}`
+								: 'Create account first'}
+						</p>
+					</div>
+					<button
+						className="glassButtonHidden"
+						onClick={() => changeCardIndex(1, accountIndex, setAccountIndex, userData)}>
+						<i className="bi bi-arrow-right"></i>
+					</button>
+				</div>
+
+				<div className="flex h-1/5 items-center gap-5">
 					<span className="flex gap-2 border-r-2 border-slate-200 pr-5 text-lg">
 						<i className="bi bi-graph-up-arrow"></i>
 						<p>Income</p>
@@ -80,7 +138,7 @@ export function Home({ userData, refreshData }: HomeProps) {
 						<i className={`${item.icon} mr-2 w-1/7 text-4xl`}></i>
 						<span className="flex w-2/7 flex-col">
 							<p className="text truncate">{item.type}</p>
-							<p className="truncate text-sm text-slate-400">{item.date}</p>
+							<p className="textSec truncate text-sm">{item.date}</p>
 						</span>
 						<p className={`w-4/7 text-end ${item.expenses ? 'text-red-500' : 'text-emerald-500'}`}>
 							{item.price}
@@ -122,5 +180,48 @@ const handleAccountCreate = async (userId: number, balance: any, refreshData: an
 		}
 	} else {
 		toast('You already have an account', { icon: <i className="bi bi-check-circle" /> });
+	}
+};
+
+const handleAccountNameChange = async (index: number, name: string, refreshData: any) => {
+	try {
+		const response = await changeAccountName({
+			accountId: index,
+			accountName: name,
+		});
+
+		if (response.status == 200) {
+			toast.success(response.data.message || 'Account name updated');
+			setTimeout(
+				async () =>
+					await toast.promise(refreshData(), {
+						loading: 'Loading',
+						success: 'Retrieved account data',
+						error: 'Error when retrieving account data',
+					}),
+				1000,
+			);
+		} else {
+			toast.error(response.data.message || 'Something went wrong');
+		}
+	} catch (error) {
+		const err = error as any;
+		toast.error(err.response?.data || err.message);
+	}
+};
+
+const changeCardIndex = (sign: number, index: number, setAccountIndex: any, userData: any) => {
+	console.log(index);
+	if (index + sign > -1 && index + sign < userData.accounts.length) setAccountIndex(index + sign);
+};
+
+const formatMoney = (value: number) => {
+	if (value !== undefined) {
+		const formatted: string = new Intl.NumberFormat('en-US', {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		}).format(value);
+
+		return formatted;
 	}
 };
