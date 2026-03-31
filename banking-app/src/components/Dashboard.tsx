@@ -43,10 +43,13 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 
 		const accountsData = await handleAccounts(userData.user.id, authenticated);
 
-		setUserData((prev: any) => ({
-			...prev,
-			accounts: accountsData.accounts,
-		}));
+		if (accountsData !== null) {
+			setUserData((prev: any) => ({
+				...prev,
+				accounts: accountsData.accounts,
+			}));
+		}
+
 	};
 
 	useEffect(() => {
