@@ -1,8 +1,8 @@
 // handles requests/responses and passes data to src/services
 
-import { createAccount, retrieveAccountsDB, changeAccountName } from '../services/accountService.js';
+import { createAccountService, getAccountsAuthService, changeAccountNameService } from '../services/accountService.js';
 
-export async function constructAccount(req, res) {
+export async function createAccountController(req, res) {
 	const { userId } = req.body;
 
 	if (!userId) {
@@ -12,7 +12,7 @@ export async function constructAccount(req, res) {
 	}
 
 	try {
-		await createAccount(userId);
+		await createAccountService(userId);
 
 		res.status(200).json({
 			message: 'Account successfully created. Wait for changes',
@@ -26,7 +26,7 @@ export async function constructAccount(req, res) {
 	}
 }
 
-export async function retrieveAccountsAuth(req, res) {
+export async function getAccountsAuthController(req, res) {
 	const userId = req.query.userId;
 	const authenticated = req.query.authenticated;
 
@@ -43,7 +43,7 @@ export async function retrieveAccountsAuth(req, res) {
 	}
 
 	try {
-		const rows = await retrieveAccountsDB(userId);
+		const rows = await getAccountsAuthService(userId);
 
 		/*
 		only sort if there will be some problems with order
@@ -83,7 +83,7 @@ export async function retrieveAccountsAuth(req, res) {
 	}
 }
 
-export async function updateAccountName(req, res) {
+export async function changeAccountNameController(req, res) {
 	const { accountId, accountName } = req.body;
 
 	if (!accountId || !accountName) {
@@ -93,7 +93,7 @@ export async function updateAccountName(req, res) {
 	}
 
 	try {
-		await changeAccountName(accountId, accountName);
+		await changeAccountNameService(accountId, accountName);
 
 		res.status(200).json({
 			message: 'Account name successfully changed. Wait for changes',

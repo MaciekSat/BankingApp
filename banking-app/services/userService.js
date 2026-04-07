@@ -3,7 +3,7 @@
 import { getConnection } from '../db/database.js';
 import oracledb from 'oracledb';
 
-export async function createUser(name, surname, email, hash) {
+export async function createUserService(name, surname, email, hash) {
 	let connection;
 
 	try {
@@ -39,7 +39,7 @@ export async function createUser(name, surname, email, hash) {
 	}
 }
 
-export async function retrieveUserDB(email) {
+export async function getUserService(email) {
 	let connection;
 
 	try {

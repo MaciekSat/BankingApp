@@ -4,6 +4,8 @@ import { createUser, getUserAuth } from '../../api/usersApi.js';
 import { createAccount, getAccountsAuth } from '../../api/accountsApi.js';
 import { useEffect, useState } from 'react';
 import { Home } from './dashboardComponents/Home.tsx';
+import { Accounts } from './dashboardComponents/Accounts.tsx';
+import { Transactions } from './dashboardComponents/Transactions.tsx';
 
 type DashboardProps = {
 	onNext: (active: string) => void;
@@ -16,7 +18,7 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 	const [userData, setUserData] = useState<any>({});
 	const [view, setView] = useState<any>('home');
 
-	const menuItem = 'w-full p-2 glassButtonHidden flex items-center justify-start gap-2';
+	const menuItem = 'w-full glassButtonHidden flex items-center justify-start gap-2';
 
 	if (!authenticated) {
 		return (
@@ -49,7 +51,6 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 				accounts: accountsData.accounts,
 			}));
 		}
-
 	};
 
 	useEffect(() => {
@@ -63,13 +64,19 @@ export function Dashboard({ mail, authenticated, onNext, logOut }: DashboardProp
 					Good morning, {userData.user?.name} {userData.user?.surname}
 				</div>
 
-				<div className="glassEdgeLess flex h-11/12 gap-3 p-5">
+				<div className="glassEdgeLess flex h-11/12 gap-3">
 					{view == 'home' && <Home userData={userData} refreshData={fetchData} />}
-					<div className="glass flex h-full w-3/20 flex-col justify-start gap-3 p-2 px-5">
+					{view == 'accounts' && <Accounts userData={userData} refreshData={fetchData} />}
+					{view == 'transactions' && <Transactions userData={userData} />}
+					<div className="glass flex h-full w-3/20 flex-col justify-start gap-3 px-5">
 						<p className="mt-3 text-start text-2xl">Main</p>
 						<button className={menuItem} onClick={() => setView('home')}>
 							<i className="bi bi-house"></i>
 							<p>Home</p>
+						</button>
+						<button className={menuItem} onClick={() => setView('accounts')}>
+							<i className="bi bi-journals"></i>
+							<p>Accounts</p>
 						</button>
 						<button className={menuItem} onClick={() => setView('transactions')}>
 							<i className="bi bi-file-earmark-text"></i>

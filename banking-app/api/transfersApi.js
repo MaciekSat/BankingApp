@@ -7,5 +7,11 @@ const API = axios.create({
 });
 
 export async function createTransfer(data) {
-	return await API.post('/transfers', data);
+	return await API.post('/transfers/createTransfer', data);
+}
+
+export async function getTransfers(accountId) {
+	return await API.get('/transfers/getTransfers', {
+		params: { accountId },
+	});
 }

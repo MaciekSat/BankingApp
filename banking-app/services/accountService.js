@@ -3,7 +3,7 @@
 import { getConnection } from '../db/database.js';
 import oracledb from 'oracledb';
 
-export async function createAccount(userId) {
+export async function createAccountService(userId) {
 	let connection;
 
 	try {
@@ -38,7 +38,7 @@ export async function createAccount(userId) {
 	}
 }
 
-export async function retrieveAccountsDB(userId) {
+export async function getAccountsAuthService(userId) {
 	let connection;
 
 	try {
@@ -77,7 +77,7 @@ export async function retrieveAccountsDB(userId) {
 	}
 }
 
-export async function changeAccountName(accountId, accountName) {
+export async function changeAccountNameService(accountId, accountName) {
 	let connection;
 
 	try {

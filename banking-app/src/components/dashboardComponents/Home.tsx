@@ -1,5 +1,7 @@
 // @ts-ignore
 import { createAccount, changeAccountName } from '../../../api/accountsApi.js';
+// @ts-ignore
+import { createTransfer } from '../../../api/transfersApi.js';
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
 
@@ -9,8 +11,8 @@ type HomeProps = {
 };
 
 export function Home({ userData, refreshData }: HomeProps) {
-	const [nameEdit, setNameEdit] = useState<boolean>(false);
 	const [accountIndex, setAccountIndex] = useState<number>(0);
+	const [nameEdit, setNameEdit] = useState<boolean>(false);
 	const [accountName, setAccountName] = useState<string>('');
 
 	const quickActionElement = 'flex items-center gap-2 px-5 h-1/5 text-lg glassButtonHidden';
@@ -31,12 +33,14 @@ export function Home({ userData, refreshData }: HomeProps) {
 		<div className="grid h-full w-17/20 grid-cols-4 grid-rows-2 gap-3">
 			{/* Banking card */}
 
-			<div className="glass col-span-2 flex flex-col items-start justify-between gap-5 p-5">
+			<div className="glass col-span-2 flex flex-col items-start justify-between gap-5">
 				<p className="h-1/5 text-2xl">Balance</p>
 				<div className="flex w-full items-center justify-between gap-10 text-xl">
 					<button
 						className="glassButtonHidden"
-						onClick={() => changeCardIndex(-1, accountIndex, setAccountIndex, userData)}>
+						onClick={() =>
+							setAccountIndex((accountIndex - 1 + userData.accounts.length) % userData.accounts.length)
+						}>
 						<i className="bi bi-arrow-left"></i>
 					</button>
 					<div className="h-full w-full text-5xl">
@@ -83,7 +87,7 @@ export function Home({ userData, refreshData }: HomeProps) {
 					</div>
 					<button
 						className="glassButtonHidden"
-						onClick={() => changeCardIndex(1, accountIndex, setAccountIndex, userData)}>
+						onClick={() => setAccountIndex((accountIndex + 1) % userData.accounts.length)}>
 						<i className="bi bi-arrow-right"></i>
 					</button>
 				</div>
@@ -103,11 +107,7 @@ export function Home({ userData, refreshData }: HomeProps) {
 			</div>
 
 			{/* Quick actions */}
-			<div className="glass flex flex-col justify-center gap-5 p-5">
-				<button className={quickActionElement}>
-					<i className="bi bi-fast-forward"></i>
-					<p>Transfer money</p>
-				</button>
+			<div className="glass flex flex-col justify-center gap-5">
 				<button
 					className={quickActionElement}
 					onClick={async () =>
@@ -115,6 +115,10 @@ export function Home({ userData, refreshData }: HomeProps) {
 					}>
 					<i className="bi bi-collection"></i>
 					<p>Create new account</p>
+				</button>
+				<button className={quickActionElement}>
+					<i className="bi bi-fast-forward"></i>
+					<p>Transfer money</p>
 				</button>
 				<button className={quickActionElement}>
 					<i className="bi bi-credit-card"></i>
@@ -131,7 +135,7 @@ export function Home({ userData, refreshData }: HomeProps) {
 			</div>
 
 			{/* Recent */}
-			<div className="glass row-span-2 flex flex-col gap-2 p-5">
+			<div className="glass row-span-2 flex flex-col gap-2">
 				<p className="text-xl">Recent</p>
 				{recentItems.map((item) => (
 					<div key={item.id} className="glassButtonSec text-md flex items-center p-3 px-4">
@@ -148,7 +152,7 @@ export function Home({ userData, refreshData }: HomeProps) {
 			</div>
 
 			{/* Analysis */}
-			<div className="glass col-span-3 flex flex-col gap-2 p-5"></div>
+			<div className="glass col-span-3 flex flex-col gap-2"></div>
 		</div>
 	);
 }
@@ -208,11 +212,6 @@ const handleAccountNameChange = async (index: number, name: string, refreshData:
 		const err = error as any;
 		toast.error(err.response?.data || err.message);
 	}
-};
-
-const changeCardIndex = (sign: number, index: number, setAccountIndex: any, userData: any) => {
-	console.log(index);
-	if (index + sign > -1 && index + sign < userData.accounts.length) setAccountIndex(index + sign);
 };
 
 const formatMoney = (value: number) => {

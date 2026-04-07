@@ -1,9 +1,9 @@
 // handles requests/responses and passes data to src/services
 
-import { createUser, retrieveUserDB } from '../services/userService.js';
+import { createUserService, getUserService } from '../services/userService.js';
 import * as argon2 from 'argon2';
 
-export async function constructUser(req, res) {
+export async function createUserController(req, res) {
 	const { username, surname, email, password } = req.body;
 
 	if (!username || !surname || !email || !password) {
@@ -16,7 +16,7 @@ export async function constructUser(req, res) {
 		const hash = await argon2.hash(password, { type: argon2.argon2i });
 
 		try {
-			await createUser(username, surname, email, hash);
+			await createUserService(username, surname, email, hash);
 
 			res.status(200).json({
 				message: 'User successfully created',
@@ -41,7 +41,7 @@ export async function constructUser(req, res) {
 	}
 }
 
-export async function retrieveUser(req, res) {
+export async function getUserController(req, res) {
 	const email = req.query.email;
 	const password = req.query.password;
 
@@ -53,7 +53,7 @@ export async function retrieveUser(req, res) {
 
 	try {
 		try {
-			const result = await retrieveUserDB(email);
+			const result = await getUserService(email);
 
 			const user = {
 				id: result.outBinds.u_id,
@@ -96,7 +96,7 @@ export async function retrieveUser(req, res) {
 	}
 }
 
-export async function retrieveUserAuth(req, res) {
+export async function getUserAuthController(req, res) {
 	const email = req.query.email;
 	const authenticated = req.query.authenticated;
 
@@ -113,7 +113,7 @@ export async function retrieveUserAuth(req, res) {
 	}
 
 	try {
-		const result = await retrieveUserDB(email);
+		const result = await getUserService(email);
 
 		const user = {
 			id: result.outBinds.u_id,

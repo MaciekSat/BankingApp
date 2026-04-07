@@ -1,14 +1,18 @@
 // maps HTTP request to code and passes data to src/controllers
 
 import express from 'express';
-import { constructAccount, retrieveAccountsAuth, updateAccountName } from '../controllers/accountController.js';
+import {
+	createAccountController,
+	getAccountsAuthController,
+	changeAccountNameController,
+} from '../controllers/accountController.js';
 
 const router = express.Router();
 
-router.post('/createAccount', constructAccount);
+router.post('/createAccount', createAccountController);
 
-router.get('/getAccountsAuth', retrieveAccountsAuth);
+router.get('/getAccountsAuth', getAccountsAuthController);
 
-router.patch('/changeAccountName', updateAccountName);
+router.patch('/changeAccountName', changeAccountNameController);
 
 export default router;
